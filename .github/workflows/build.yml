@@ -28,4 +28,4 @@ jobs:
 
       - name: Compile Sketch
         run: |
-          arduino-cli compile --fqbn esp32:esp32:adafruit_feather_esp32c6 .
+          arduino-cli compile --fqbn esp32:esp32:adafruit_feather_esp32c6 --warnings none .
