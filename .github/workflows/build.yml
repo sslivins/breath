@@ -33,10 +33,10 @@ jobs:
 
       - name: Compile Sketch
         run: |
-          arduino-cli compile --fqbn esp32:esp32:adafruit_feather_esp32c6 --warnings none .
+          arduino-cli compile --fqbn esp32:esp32:adafruit_feather_esp32c6 --warnings none --build-path ./build
 
       - name: List build output
-        run: ls -R .          
+        run: ls -R build         
         
       - name: Read version from file
         id: get_version
