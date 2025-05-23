@@ -34,6 +34,9 @@ jobs:
       - name: Compile Sketch
         run: |
           arduino-cli compile --fqbn esp32:esp32:adafruit_feather_esp32c6 --warnings none .
+
+      - name: List build output
+        run: ls -R build          
         
       - name: Read version from file
         id: get_version
