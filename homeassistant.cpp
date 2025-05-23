@@ -1,6 +1,6 @@
 #include <ArduinoJson.h>
 
-#include "homeAssistant.h"
+#include "homeassistant.h"
 
 HomeAssistant::HomeAssistant(WiFiClient& netClient,
                              const String& mqttServer, int mqttPort,
