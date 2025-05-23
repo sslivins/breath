@@ -34,3 +34,16 @@ jobs:
       - name: Compile Sketch
         run: |
           arduino-cli compile --fqbn esp32:esp32:adafruit_feather_esp32c6 --warnings none .
+        
+      - name: Read version from file
+        id: get_version
+        run: echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
+
+      - name: Rename firmware with version
+        run: mv build/breath.ino.bin build/breath_${VERSION}.bin
+
+      - name: Upload firmware binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: breath-firmware
+          path: build/breath_${{ env.VERSION }}.bin     
