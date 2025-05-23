@@ -1,0 +1,52 @@
+# Arduino build files
+*.elf
+*.bin
+*.hex
+*.eep
+*.map
+*.d
+*.o
+*.a
+
+# Arduino IDE files
+*.ino.*
+*.cpp.*
+*.h.*
+*.sdf
+*.suo
+*.user
+*.ncb
+*.opensdf
+*.VC.db
+*.VC.opendb
+
+# VS Code settings
+.vscode/
+*.code-workspace
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+.clang_complete
+.gcc-flags.json
+
+# Arduino libraries (if downloaded locally)
+libraries/
+
+# Mac and Windows system files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*~
+*.bak
+*.swp
+*.tmp
+
+# Arduino cache
+__pycache__/
+.cache/
+build/
+
+
