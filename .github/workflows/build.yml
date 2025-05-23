@@ -24,7 +24,7 @@ jobs:
 
       - name: Install Libraries
         run: |
-          arduino-cli lib install "WiFiManager" "ESP Async WebServer" "AsyncTCP" "WebSerial" "Sensirion I2C SCD4x" "PubSubClient"
+          arduino-cli lib install "WiFiManager" "ESP Async WebServer" "AsyncTCP" "WebSerial" "Sensirion I2C SCD4x" "PubSubClient" "ArduinoJson"
 
       - name: Compile Sketch
         run: |
