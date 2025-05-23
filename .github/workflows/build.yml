@@ -1,0 +1,33 @@
+name: Build ESP32-C6 Breath Firmware (Arduino CLI)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Arduino CLI
+        uses: arduino/setup-arduino-cli@v1
+        with:
+          version: latest
+
+      - name: Install ESP32 Board Platform
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32
+
+      - name: Install Libraries
+        run: |
+          arduino-cli lib install "WiFiManager" "ESP Async WebServer" "WebSerial" "Sensirion I2C SCD4x" "PubSubClient"
+
+      - name: Compile Sketch
+        run: |
+          arduino-cli compile --fqbn esp32:esp32:adafruit_feather_esp32c6 .
