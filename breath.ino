@@ -11,6 +11,7 @@
 #include "config.h"
 #include "homeassistant.h"
 #include "wifi_setup.h"
+#include "ota.h"
 
 #ifdef NO_ERROR
 #undef NO_ERROR
@@ -30,9 +31,9 @@ unsigned long last_sensor_reading = millis();
 
 MqttConfig mqttConfig;
 HomeAssistant* ha;
+OTAUpdater ota(IMAGE_MANIFEST_URL);
 
 void setup() {
-
 
   pinMode(RED_LED, OUTPUT);
   pinMode(BOOT_BUTTON_PIN, INPUT_PULLUP); // Boot button is usually active LOW
@@ -105,6 +106,8 @@ void setup() {
   WebSerial.println("WebSerial client connected!");  
 
   WebSerial.println(WiFi.localIP());
+
+  ota.checkAndUpdate();
 
   //setup CO2 sensor
   Wire.begin();

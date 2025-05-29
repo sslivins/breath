@@ -38,15 +38,27 @@ jobs:
       - name: List build output
         run: ls -R build         
         
-      - name: Read version from file
+      - name: Read version from config.h
         id: get_version
-        run: echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
+        run: |
+          VERSION=$(grep -oP '#define\s+FW_VERSION\s+"\K[^"]+' config.h)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Rename firmware with version
         run: mv build/breath.ino.bin build/breath_${VERSION}.bin
 
-      - name: Upload firmware binary
+      - name: Generate manifest.json
+        run: |
+          echo '{
+            "version": "'${VERSION}'",
+            "bin_url": "https://github.com/${{ github.repository }}/releases/download/v${VERSION}/breath_${VERSION}.bin"
+          }' > build/manifest.json        
+
+      - name: Upload all build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: breath-firmware
-          path: build/breath_${{ env.VERSION }}.bin     
+          name: breath-build-artifacts
+          path: build/**
+          
+
+
