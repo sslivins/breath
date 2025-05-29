@@ -1,5 +1,8 @@
-#pragma once
+#ifndef OTA_H
+#define OTA_H
+
 #include <Arduino.h>
+#include <WiFiClient.h>
 
 class OTAUpdater {
 public:
@@ -11,3 +14,5 @@ private:
     bool isNewerVersion(const String& remote, const String& local);
     void performOTA(const String& binUrl);
 };
+
+#endif // OTA_H
