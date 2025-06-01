@@ -58,7 +58,22 @@ void OTAUpdater::performOTA(const String& binUrl) {
 
     WiFiClient* stream = http.getStreamPtr();
     Serial.println("Writing firmware to flash...");
+
+    Update.onProgress([](size_t written, size_t total) {
+        // Example: Blink LED on each progress callback
+        static unsigned long lastBlink = 0;
+        static bool ledState = LOW;
+        if (millis() - lastBlink > 100) { // Blink every 100ms
+            ledState = !ledState;
+            digitalWrite(RED_LED, ledState);
+            lastBlink = millis();
+        }
+    });
+
     size_t written = Update.writeStream(*stream);
+
+    // Turn off LED after update
+    digitalWrite(RED_LED, LOW);
     Serial.printf("Written %u/%u bytes\n", (unsigned)written, (unsigned)contentLength);
     if (written == contentLength && Update.end()) {
         if (Update.isFinished()) {
