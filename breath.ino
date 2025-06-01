@@ -32,7 +32,8 @@ void setup() {
   //USB-CDC on boot must be enabled for serial port output to work
   Serial.begin(115200);
 
-  Serial.println("Breath 0.1.0");
+  Serial.print("Breath ");
+  Serial.println(FW_VERSION);
 
   pinMode(RED_LED, OUTPUT);
   pinMode(BOOT_BUTTON_PIN, INPUT_PULLUP); // Boot button is usually active LOW
