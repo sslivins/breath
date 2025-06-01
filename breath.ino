@@ -146,7 +146,8 @@ void setup() {
   Serial.print("  Pass: ");
   Serial.println(mqttConfig.pass);
 
-  ha = new HomeAssistant(netClient, mqttConfig.server, mqttConfig.port, mqttConfig.user, mqttConfig.pass, DEVICE_NAME, sensor_serial);
+  String configUrl = "http://" + WiFi.localIP().toString();
+  ha = new HomeAssistant(netClient, mqttConfig.server, mqttConfig.port, mqttConfig.user, mqttConfig.pass, DEVICE_NAME, sensor_serial, configUrl);
   ha->begin();  
 }
 

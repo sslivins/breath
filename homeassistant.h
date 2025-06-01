@@ -6,10 +6,11 @@
 
 class HomeAssistant {
 public:
-  HomeAssistant(WiFiClient& netClient,
-                const String& mqttServer, int mqttPort,
-                const String& mqttUser, const String& mqttPass,
-                const String& deviceName, const String& serialNumber);
+    HomeAssistant(WiFiClient& netClient,
+                 const String& mqttServer, int mqttPort,
+                 const String& mqttUser, const String& mqttPass,
+                 const String& deviceName, const String& serialNumber,
+                 const String& configUrl);
 
   void begin();
   void loop();

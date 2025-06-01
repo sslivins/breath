@@ -7,13 +7,15 @@
 HomeAssistant::HomeAssistant(WiFiClient& netClient,
                              const String& mqttServer, int mqttPort,
                              const String& mqttUser, const String& mqttPass,
-                             const String& deviceName, const String& serialNumber)
+                             const String& deviceName, const String& serialNumber,
+                             const String& configUrl)
   : client(netClient),
     mqttServer(mqttServer), mqttPort(mqttPort),
     mqttUser(mqttUser), mqttPass(mqttPass),
     deviceName(deviceName), serial(serialNumber),
     nodeId(deviceName + "_" + serial),
-    stateTopic(nodeId + "/state") {}
+    stateTopic(nodeId + "/state") {},
+    configUrl(configUrl)
 
 void HomeAssistant::begin() {
   connectMQTT();
@@ -150,14 +152,15 @@ void HomeAssistant::publishDiscovery(const String& entityType,  // e.g. "sensor"
     String uid = nodeId + "_" + name;
     String topic = "homeassistant/" + entityType + "/" + uid + "/config";
 
-  String payload = "{\"name\":\"" + name + "\","
-                  "\"state_topic\":\"" + stateTopic + "\","
-                  "\"unique_id\":\"" + uid + "\","
-                  "\"device\":{\"identifiers\":[\"" + nodeId + "\"],"
-                  "\"name\":\"" + deviceName + " " + serial + "\","
-                  "\"model\":\"" + deviceName + "\","
-                  "\"manufacturer\":\"Stefan Labs\","
-                  "\"sw_version\":\"" + String(FW_VERSION) + "\"}";
+    String payload = "{\"name\":\"" + name + "\","
+                    "\"state_topic\":\"" + stateTopic + "\","
+                    "\"unique_id\":\"" + uid + "\","
+                    "\"device\":{\"identifiers\":[\"" + nodeId + "\"],"
+                    "\"name\":\"" + deviceName + " " + serial + "\","
+                    "\"model\":\"" + deviceName + "\","
+                    "\"manufacturer\":\"Stefan Labs\","
+                    "\"sw_version\":\"" + String(FW_VERSION) + "\","
+                    "\"configuration_url\":\"" + configUrl + "\"}";
 
   if (entityType == "light" && name == "neopixel") {
     payload += ",\"schema\":\"json\",\"brightness\":true,\"rgb\":true";
