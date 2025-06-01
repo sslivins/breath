@@ -10,6 +10,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    outputs:
+      version: ${{ steps.get_version.outputs.VERSION }}           
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -67,10 +70,10 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.VERSION }}
-          name: Release v${{ env.VERSION }}
+          tag_name: v${{ needs.build.outputs.version }}
+          name: Release v${{ needs.build.outputs.version }}
           files: |
-            build/breath_${{ env.VERSION }}.bin
+            build/breath_${{ needs.build.outputs.version }}.bin
             build/manifest.json
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
