@@ -2,9 +2,9 @@ name: Build ESP32-C6 Breath Firmware (Arduino CLI)
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ] # Trigger only on pushes to the main branch
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master ] # Still build on pull requests for testing
 
 jobs:
   build:
@@ -35,7 +35,7 @@ jobs:
 
       - name: List build output
         run: ls -R build         
-        
+
       - name: Read version from config.h
         id: get_version
         run: |
@@ -47,14 +47,30 @@ jobs:
 
       - name: Generate manifest.json
         run: |
-          echo '{
-            "version": "'${VERSION}'",
-            "bin_url": "https://github.com/${{ github.repository }}/releases/download/v${VERSION}/breath_${VERSION}.bin"
-          }' > build/manifest.json        
+          echo "{
+            \"version\": \"${VERSION}\",
+            \"bin_url\": \"https://github.com/${{ github.repository }}/releases/download/v${VERSION}/breath_${VERSION}.bin\"
+          }" > build/manifest.json   
 
       - name: Upload all build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: breath-build-artifacts
           path: build/**
-          
+
+  release:
+    if: github.ref == 'refs/heads/main' # Only run this job on the main branch
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
+          files: |
+            build/breath_${{ env.VERSION }}.bin
+            build/manifest.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
