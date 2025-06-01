@@ -1,17 +1,14 @@
 #include <ArduinoJson.h>
-
 #include "homeassistant.h"
 
 HomeAssistant::HomeAssistant(WiFiClient& netClient,
                              const String& mqttServer, int mqttPort,
                              const String& mqttUser, const String& mqttPass,
-                             const String& deviceName, const String& serialNumber,
-                             WebSerialClass& webserial)
+                             const String& deviceName, const String& serialNumber)
   : client(netClient),
     mqttServer(mqttServer), mqttPort(mqttPort),
     mqttUser(mqttUser), mqttPass(mqttPass),
     deviceName(deviceName), serial(serialNumber),
-    webserial(webserial),
     nodeId(deviceName + "_" + serial),
     stateTopic(nodeId + "/state") {}
 
@@ -35,10 +32,10 @@ void HomeAssistant::connectMQTT() {
       message += (char)payload[i];
     }
 
-    webserial.print("MQTT command received on ");
-    webserial.print(topic);
-    webserial.print(": ");
-    webserial.println(message);
+    Serial.print("MQTT command received on ");
+    Serial.print(topic);
+    Serial.print(": ");
+    Serial.println(message);
 
     String ledCommandTopic = nodeId + "/led/set";
 
@@ -51,46 +48,42 @@ void HomeAssistant::connectMQTT() {
       client.publish(stateTopic.c_str(), ledState ? "ON" : "OFF", true);
       return;
     }
-
   });
 
   int retries = 5;
   while (!client.connected() && retries-- > 0) {
-    webserial.println("Connecting to MQTT...");
+    Serial.println("Connecting to MQTT...");
     if (client.connect(nodeId.c_str(), mqttUser.c_str(), mqttPass.c_str())) {
-      webserial.println("✅ MQTT connected.");
+      Serial.println("MQTT connected.");
 
       String controlTopic;
-      // Subscribe to LED control topic
       controlTopic = nodeId + "/led/set";
       client.subscribe(controlTopic.c_str());
 
       return;
-
     } else {
-      webserial.print("❌ MQTT connect failed. rc=");
-      webserial.println(client.state());
+      Serial.print("MQTT connect failed. rc=");
+      Serial.println(client.state());
       delay(1000);
     }
   }
 
   if (!client.connected()) {
-    webserial.println("❌ Failed to connect to MQTT after retries.");
+    Serial.println("Failed to connect to MQTT after retries.");
   }
 }
 
-
 void HomeAssistant::SendDiscovery() {
   if (!client.connected()) {
-    webserial.println("❌ MQTT not connected — reconnecting...");
+    Serial.println("MQTT not connected — reconnecting...");
     connectMQTT();
 
-    if (!client.connected()) {  // ← this had a double negation before
-      webserial.println("❌ MQTT failed to reconnect");
+    if (!client.connected()) {
+      Serial.println("MQTT failed to reconnect");
       return;
     }
 
-    webserial.println("✅ MQTT successfully reconnected");
+    Serial.println("MQTT successfully reconnected");
   }
 
   publishDiscovery(
@@ -142,7 +135,6 @@ void HomeAssistant::SendDiscovery() {
     String(""),
     String("")
   );
-
 }
 
 void HomeAssistant::publishDiscovery(const String& entityType,  // e.g. "sensor", "switch"
@@ -186,17 +178,16 @@ void HomeAssistant::publishDiscovery(const String& entityType,  // e.g. "sensor"
 
   payload += "}";
 
-  webserial.println("Publishing discovery:");
-  webserial.print("  Topic: ");
-  webserial.println(topic);
-  webserial.print("  Payload: ");
-  webserial.println(payload);
+  Serial.println("Publishing discovery:");
+  Serial.print("  Topic: ");
+  Serial.println(topic);
+  Serial.print("  Payload: ");
+  Serial.println(payload);
 
   bool result = client.publish(topic.c_str(), payload.c_str(), true);
-  webserial.print("  MQTT publish result: ");
-  webserial.println(result ? "✅ success" : "❌ failed");
+  Serial.print("  MQTT publish result: ");
+  Serial.println(result ? "success" : "failed");
 }
-
 
 String getUTCTimestamp() {
   time_t now = time(nullptr);
@@ -206,18 +197,17 @@ String getUTCTimestamp() {
   return String(ts);
 }
 
-
 void HomeAssistant::publishState(uint16_t co2, float temp, float hum) {
   if (!client.connected()) {
-    webserial.println("❌ MQTT not connected — reconnecting...");
+    Serial.println("MQTT not connected — reconnecting...");
     connectMQTT();
 
-    if (!client.connected()) {  // ← this had a double negation before
-      webserial.println("❌ MQTT failed to reconnect");
+    if (!client.connected()) {
+      Serial.println("MQTT failed to reconnect");
       return;
     }
 
-    webserial.println("✅ MQTT successfully reconnected");
+    Serial.println("MQTT successfully reconnected");
   }
 
   String payload = "{\"co2\":" + String(co2) +
@@ -225,15 +215,13 @@ void HomeAssistant::publishState(uint16_t co2, float temp, float hum) {
                   ",\"humidity\":" + String(hum, 2) +
                   ",\"last_updated\":null}";
 
-  webserial.print("Publishing state to ");
-  webserial.print(stateTopic);
-  webserial.print(": ");
-  webserial.println(payload);
+  Serial.print("Publishing state to ");
+  Serial.print(stateTopic);
+  Serial.print(": ");
+  Serial.println(payload);
 
   bool result = client.publish(stateTopic.c_str(), payload.c_str(), true);
 
-  webserial.print("  MQTT publish result: ");
-  webserial.println(result ? "✅ success" : "❌ failed");
+  Serial.print("  MQTT publish result: ");
+  Serial.println(result ? "success" : "failed");
 }
-
-

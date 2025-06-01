@@ -1,9 +1,6 @@
 #include <Arduino.h>
 #include <time.h>
 #include <WiFi.h>
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include <WebSerial.h>
 #include <Wire.h>
 
 #include <SensirionI2cScd4x.h>
@@ -18,22 +15,24 @@
 #endif
 #define NO_ERROR 0
 
-AsyncWebServer server(80);
-
 WiFiClient netClient;
 SensirionI2cScd4x sensor;
 
 WifiSetup wifiSetup;
 
-static char errorMessage[64];
-static int16_t error;
 unsigned long last_sensor_reading = millis();
 
 MqttConfig mqttConfig;
 HomeAssistant* ha;
-OTAUpdater ota(IMAGE_MANIFEST_URL);
 
 void setup() {
+  static char errorMessage[64];
+  static int16_t error;  
+
+  //USB-CDC on boot must be enabled for serial port output to work
+  Serial.begin(115200);
+
+  Serial.println("Breath 0.1.0");
 
   pinMode(RED_LED, OUTPUT);
   pinMode(BOOT_BUTTON_PIN, INPUT_PULLUP); // Boot button is usually active LOW
@@ -86,27 +85,11 @@ void setup() {
     delay(100);
   }  
 
-  //start webserial server
-  WebSerial.begin(&server);
+  Serial.println("WiFi connected!");
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());  
 
-  WebSerial.onMessage([&](uint8_t *data, size_t len) {
-    WebSerial.println("Received Data...");
-    String d = "";
-    for(size_t i=0; i < len; i++){
-      d += char(data[i]);
-    }
-    WebSerial.println(d);
-  });
-
-  server.begin();
-
-  while (WebSerial.getConnectionCount() == 0) {
-    delay(100);
-  }
-  WebSerial.println("WebSerial client connected!");  
-
-  WebSerial.println(WiFi.localIP());
-
+  OTAUpdater ota(IMAGE_MANIFEST_URL);
   ota.checkAndUpdate();
 
   //setup CO2 sensor
@@ -118,56 +101,59 @@ void setup() {
   // Ensure sensor is in clean state
   error = sensor.wakeUp();
   if (error != NO_ERROR) {
-      WebSerial.print("Error trying to execute wakeUp(): ");
+      Serial.print("Error trying to execute wakeUp(): ");
       errorToString(error, errorMessage, sizeof errorMessage);
-      WebSerial.println(errorMessage);
+      Serial.println(errorMessage);
   }
   error = sensor.stopPeriodicMeasurement();
   if (error != NO_ERROR) {
-      WebSerial.print("Error trying to execute stopPeriodicMeasurement(): ");
+      Serial.print("Error trying to execute stopPeriodicMeasurement(): ");
       errorToString(error, errorMessage, sizeof errorMessage);
-      WebSerial.println(errorMessage);
+      Serial.println(errorMessage);
   }
   error = sensor.reinit();
   if (error != NO_ERROR) {
-      WebSerial.print("Error trying to execute reinit(): ");
+      Serial.print("Error trying to execute reinit(): ");
       errorToString(error, errorMessage, sizeof errorMessage);
-      WebSerial.println(errorMessage);
+      Serial.println(errorMessage);
   }
   // Read out information about the sensor
   error = sensor.getSerialNumber(serialNumber);
   if (error != NO_ERROR) {
-      WebSerial.print("Error trying to execute getSerialNumber(): ");
+      Serial.print("Error trying to execute getSerialNumber(): ");
       errorToString(error, errorMessage, sizeof errorMessage);
-      WebSerial.println(errorMessage);
+      Serial.println(errorMessage);
       return;
   }
   char buf[21];
   sprintf(buf, "%012llX", serialNumber);
   String sensor_serial = String(buf);
 
-  WebSerial.print("Serial Number: ");
-  WebSerial.println(sensor_serial);
+  Serial.print("Serial Number: ");
+  Serial.println(sensor_serial);
 
   mqttConfig = wifiSetup.getMqttConfig();
 
   // Log mqttConfig structure
-  WebSerial.println("MQTT Config:");
-  WebSerial.print("  Server: ");
-  WebSerial.println(mqttConfig.server);
-  WebSerial.print("  Port: ");
-  WebSerial.println(mqttConfig.port);
-  WebSerial.print("  User: ");
-  WebSerial.println(mqttConfig.user);
-  WebSerial.print("  Pass: ");
-  WebSerial.println(mqttConfig.pass);
+  Serial.println("MQTT Config:");
+  Serial.print("  Server: ");
+  Serial.println(mqttConfig.server);
+  Serial.print("  Port: ");
+  Serial.println(mqttConfig.port);
+  Serial.print("  User: ");
+  Serial.println(mqttConfig.user);
+  Serial.print("  Pass: ");
+  Serial.println(mqttConfig.pass);
 
-  ha = new HomeAssistant(netClient, mqttConfig.server, mqttConfig.port, mqttConfig.user, mqttConfig.pass, DEVICE_NAME, sensor_serial, WebSerial);
+  ha = new HomeAssistant(netClient, mqttConfig.server, mqttConfig.port, mqttConfig.user, mqttConfig.pass, DEVICE_NAME, sensor_serial);
   ha->begin();  
 }
 
 
 void loop() {
+  static char errorMessage[64];
+  static int16_t error;  
+
   uint16_t co2Concentration = 0;
   float temperature = 0.0;
   float relativeHumidity = 0.0;
@@ -178,26 +164,26 @@ void loop() {
 
       error = sensor.wakeUp();
       if (error != NO_ERROR) {
-          WebSerial.print("Error trying to execute wakeUp(): ");
+          Serial.print("Error trying to execute wakeUp(): ");
           errorToString(error, errorMessage, sizeof errorMessage);
-          WebSerial.println(errorMessage);
+          Serial.println(errorMessage);
           return;
       }
 
       error = sensor.measureSingleShot();
       if (error != NO_ERROR) {
-          WebSerial.print("Error trying to execute measureSingleShot(): ");
+          Serial.print("Error trying to execute measureSingleShot(): ");
           errorToString(error, errorMessage, sizeof errorMessage);
-          WebSerial.println(errorMessage);
+          Serial.println(errorMessage);
           return;
       }
 
       error = sensor.measureAndReadSingleShot(co2Concentration, temperature,
                                               relativeHumidity);
       if (error != NO_ERROR) {
-          WebSerial.print("Error trying to execute measureAndReadSingleShot(): ");
+          Serial.print("Error trying to execute measureAndReadSingleShot(): ");
           errorToString(error, errorMessage, sizeof errorMessage);
-          WebSerial.println(errorMessage);
+          Serial.println(errorMessage);
           return;
       }
 
@@ -205,7 +191,5 @@ void loop() {
       
   }
     
-  WebSerial.loop();
   ha->loop();
 }
-

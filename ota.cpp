@@ -12,10 +12,11 @@ void OTAUpdater::checkAndUpdate() {
     int httpCode = http.GET();
     if (httpCode != 200) {
         http.end();
+        Serial.printf("Failed to fetch manifest: %d\n", httpCode);
         return;
     }
 
-    DynamicJsonDocument doc(1024);
+    StaticJsonDocument<256> doc;
     DeserializationError error = deserializeJson(doc, http.getString());
     http.end();
     if (error) return;

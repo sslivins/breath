@@ -27,9 +27,7 @@ jobs:
 
       - name: Install Libraries
         run: |
-          arduino-cli lib install "WiFiManager" "WebSerial" "Sensirion I2C SCD4x" "PubSubClient" "ArduinoJson"
-          arduino-cli lib install --git-url https://github.com/ESP32Async/ESPAsyncWebServer.git
-          arduino-cli lib install --git-url https://github.com/ESP32Async/AsyncTCP.git        
+          arduino-cli lib install "WiFiManager" "Sensirion I2C SCD4x" "PubSubClient" "ArduinoJson"  
 
       - name: Compile Sketch
         run: |
@@ -60,5 +58,3 @@ jobs:
           name: breath-build-artifacts
           path: build/**
           
-
-

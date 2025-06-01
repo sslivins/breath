@@ -3,15 +3,13 @@
 
 #include <WiFiClient.h>
 #include <PubSubClient.h>
-#include <WebSerial.h>
 
 class HomeAssistant {
 public:
   HomeAssistant(WiFiClient& netClient,
                 const String& mqttServer, int mqttPort,
                 const String& mqttUser, const String& mqttPass,
-                const String& deviceName, const String& serialNumber,
-                WebSerialClass& webserial);
+                const String& deviceName, const String& serialNumber);
 
   void begin();
   void loop();
@@ -19,7 +17,6 @@ public:
 
 private:
   PubSubClient client;
-  WebSerialClass& webserial;
   String mqttServer;
   String mqttUser;
   String mqttPass;
@@ -32,12 +29,12 @@ private:
   void connectMQTT();
   void SendDiscovery();
   void publishDiscovery(const String& entityType,
-                                     const String& name,
-                                     const String& stateTopic,
-                                     const String& commandTopic,
-                                     const String& deviceClass,
-                                     const String& unit,
-                                     const String& valueTemplate);
+                        const String& name,
+                        const String& stateTopic,
+                        const String& commandTopic,
+                        const String& deviceClass,
+                        const String& unit,
+                        const String& valueTemplate);
 };
 
 #endif
