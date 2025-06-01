@@ -1,3 +1,6 @@
+
+#include "config.h"
+
 #include <ArduinoJson.h>
 #include "homeassistant.h"
 
@@ -147,13 +150,14 @@ void HomeAssistant::publishDiscovery(const String& entityType,  // e.g. "sensor"
     String uid = nodeId + "_" + name;
     String topic = "homeassistant/" + entityType + "/" + uid + "/config";
 
-    String payload = "{\"name\":\"" + name + "\","
-                    "\"state_topic\":\"" + stateTopic + "\","
-                    "\"unique_id\":\"" + uid + "\","
-                    "\"device\":{\"identifiers\":[\"" + nodeId + "\"],"
-                    "\"name\":\"" + deviceName + " " + serial + "\","
-                    "\"model\":\"" + deviceName + "\","
-                    "\"manufacturer\":\"Stefan Labs\"}";
+  String payload = "{\"name\":\"" + name + "\","
+                  "\"state_topic\":\"" + stateTopic + "\","
+                  "\"unique_id\":\"" + uid + "\","
+                  "\"device\":{\"identifiers\":[\"" + nodeId + "\"],"
+                  "\"name\":\"" + deviceName + " " + serial + "\","
+                  "\"model\":\"" + deviceName + "\","
+                  "\"manufacturer\":\"Stefan Labs\","
+                  "\"sw_version\":\"" + String(FW_VERSION) + "\"}";
 
   if (entityType == "light" && name == "neopixel") {
     payload += ",\"schema\":\"json\",\"brightness\":true,\"rgb\":true";
