@@ -44,7 +44,7 @@ jobs:
         run: |
           VERSION=$(grep -oP '#define\s+FW_VERSION\s+"\K[^"]+' config.h)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "::set-output name=version::$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Rename firmware with version
         run: mv build/breath.ino.bin build/breath_${VERSION}.bin

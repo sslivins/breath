@@ -10,6 +10,6 @@
 #define NUMPIXELS    1   // There's only one NeoPixel on the board
 
 #define FW_VERSION "0.1.1"
-#define IMAGE_MANIFEST_URL "https://raw.githubusercontent.com/sslivins/breath/main/manifest.json"
+#define IMAGE_MANIFEST_URL "https://github.com/sslivins/breath/releases/latest/download/manifest.json"
 
 #endif
