@@ -26,6 +26,7 @@ private:
   String serial;
   String nodeId;
   String stateTopic;
+  String configUrl;
 
   void connectMQTT();
   void SendDiscovery();
