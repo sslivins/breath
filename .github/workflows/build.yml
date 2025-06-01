@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      version: ${{ steps.get_version.outputs.VERSION }}           
+      version: ${{ steps.get_version.outputs.version }}
 
     steps:
       - name: Checkout code
@@ -44,6 +44,7 @@ jobs:
         run: |
           VERSION=$(grep -oP '#define\s+FW_VERSION\s+"\K[^"]+' config.h)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "::set-output name=version::$VERSION"
 
       - name: Rename firmware with version
         run: mv build/breath.ino.bin build/breath_${VERSION}.bin
@@ -53,12 +54,12 @@ jobs:
           echo "{
             \"version\": \"${VERSION}\",
             \"bin_url\": \"https://github.com/${{ github.repository }}/releases/download/v${VERSION}/breath_${VERSION}.bin\"
-          }" > build/manifest.json   
+          }" > build/manifest.json        
 
-      - name: Upload all build artifacts
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: breath-build-artifacts
+          name: build-artifacts
           path: build/**
 
   release:
@@ -67,6 +68,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
