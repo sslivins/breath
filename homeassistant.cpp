@@ -14,8 +14,9 @@ HomeAssistant::HomeAssistant(WiFiClient& netClient,
     mqttUser(mqttUser), mqttPass(mqttPass),
     deviceName(deviceName), serial(serialNumber),
     nodeId(deviceName + "_" + serial),
-    stateTopic(nodeId + "/state") {},
+    stateTopic(nodeId + "/state"),
     configUrl(configUrl)
+  {}
 
 void HomeAssistant::begin() {
   connectMQTT();
