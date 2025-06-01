@@ -9,7 +9,9 @@
 #define NEOPIXEL_PIN 9   // Feather ESP32-C6 NeoPixel is on GPIO 9
 #define NUMPIXELS    1   // There's only one NeoPixel on the board
 
-#define FW_VERSION "0.1.6"
+#define RESET_WIFI_PIN 4 // Pin to reset WiFi credentials (if needed)
+
+#define FW_VERSION "0.1.7"
 #define IMAGE_MANIFEST_URL "https://github.com/sslivins/breath/releases/latest/download/manifest.json"
 
 #endif

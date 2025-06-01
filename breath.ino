@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <time.h>
+// #include <time.h>
 #include <WiFi.h>
 #include <Wire.h>
 
@@ -36,31 +36,46 @@ void setup() {
   Serial.println(FW_VERSION);
 
   pinMode(RED_LED, OUTPUT);
-  pinMode(BOOT_BUTTON_PIN, INPUT_PULLUP); // Boot button is usually active LOW
-
-  //add a delay to allow the user to see the boot button state
-  digitalWrite(RED_LED, HIGH);
-  delay(10000);
-  digitalWrite(RED_LED, LOW);
+  pinMode(RESET_WIFI_PIN, INPUT_PULLUP); // Button is active LOW
 
   // Check if boot button is held at startup
-  if (digitalRead(BOOT_BUTTON_PIN) == LOW) {
-    // Indicate reset mode (blink LED fast)
-    for (int i = 0; i < 10; i++) {
-      digitalWrite(RED_LED, HIGH);
-      delay(250);
-      digitalWrite(RED_LED, LOW);
-      delay(250);
-    }
-    // Erase WiFi credentials and restart
-    wifiSetup.resetCredentials();
-    delay(500);
-    ESP.restart();
-  }  
+  if (digitalRead(RESET_WIFI_PIN) == LOW) {
+    unsigned long startTime = millis();
+    bool stillHolding = true;
 
-  digitalWrite(RED_LED, HIGH);
+    Serial.println("Boot button held, entering WiFi reset mode...");
+
+    // Blink LED slowly for 10 seconds, checking button state
+    while (millis() - startTime < 10000) {
+      digitalWrite(RED_LED, HIGH);
+      delay(200);
+      digitalWrite(RED_LED, LOW);
+      delay(300);
+
+      if (digitalRead(RESET_WIFI_PIN) != LOW) {
+        stillHolding = false;
+        break;
+      }
+    }
+
+    if (stillHolding) {
+      Serial.println("Button still held, resetting WiFi credentials...");
+      // Blink LED rapidly for 2 seconds before reset
+      for (int i = 0; i < 10; i++) {
+        digitalWrite(RED_LED, HIGH);
+        delay(50);
+        digitalWrite(RED_LED, LOW);
+        delay(50);
+      }
+      // Erase WiFi credentials and restart
+      wifiSetup.resetCredentials();
+      digitalWrite(RED_LED, LOW); // LED off after reset
+      delay(500);
+      ESP.restart();
+    }
+  }
+
   wifiSetup.begin("Breath-Setup");
-  digitalWrite(RED_LED, LOW);
 
   // Wait until connected
   while (WiFi.status() != WL_CONNECTED) {
@@ -70,25 +85,25 @@ void setup() {
     delay(300);
   }
 
-  // Set timezone environment string for Pacific Time (automatically handles DST)
-  setenv("TZ", "PST8PDT,M3.2.0/2,M11.1.0/2", 1);
-  tzset();  
+  // // Set timezone environment string for Pacific Time (automatically handles DST)
+  // setenv("TZ", "PST8PDT,M3.2.0/2,M11.1.0/2", 1);
+  // tzset();  
 
-  // Set up SNTP (Simple Network Time Protocol)
-  configTime(0, 0, "pool.ntp.org");  // UTC offset, DST offset, NTP server
+  // // Set up SNTP (Simple Network Time Protocol)
+  // configTime(0, 0, "pool.ntp.org");  // UTC offset, DST offset, NTP server
 
-  // Wait for time to be set (optional, can retry a few times)
-  struct tm timeinfo;
-  while (!getLocalTime(&timeinfo)) {
-    digitalWrite(RED_LED, HIGH);   // turn the RED_LED on (HIGH is the voltage level)
-    delay(50);                // wait for a half second
-    digitalWrite(RED_LED, LOW);    // turn the RED_LED off by making the voltage LOW
-    delay(100);
-  }  
+  // // Wait for time to be set (optional, can retry a few times)
+  // struct tm timeinfo;
+  // while (!getLocalTime(&timeinfo)) {
+  //   digitalWrite(RED_LED, HIGH);   // turn the RED_LED on (HIGH is the voltage level)
+  //   delay(50);                // wait for a half second
+  //   digitalWrite(RED_LED, LOW);    // turn the RED_LED off by making the voltage LOW
+  //   delay(100);
+  // }  
 
-  Serial.println("WiFi connected!");
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP());  
+  // Serial.println("WiFi connected!");
+  // Serial.print("IP Address: ");
+  // Serial.println(WiFi.localIP());  
 
   OTAUpdater ota(IMAGE_MANIFEST_URL);
   ota.checkAndUpdate();
@@ -130,27 +145,26 @@ void setup() {
   sprintf(buf, "%012llX", serialNumber);
   String sensor_serial = String(buf);
 
-  Serial.print("Serial Number: ");
-  Serial.println(sensor_serial);
+  // Serial.print("Serial Number: ");
+  // Serial.println(sensor_serial);
 
   mqttConfig = wifiSetup.getMqttConfig();
 
   // Log mqttConfig structure
-  Serial.println("MQTT Config:");
-  Serial.print("  Server: ");
-  Serial.println(mqttConfig.server);
-  Serial.print("  Port: ");
-  Serial.println(mqttConfig.port);
-  Serial.print("  User: ");
-  Serial.println(mqttConfig.user);
-  Serial.print("  Pass: ");
-  Serial.println(mqttConfig.pass);
+  // Serial.println("MQTT Config:");
+  // Serial.print("  Server: ");
+  // Serial.println(mqttConfig.server);
+  // Serial.print("  Port: ");
+  // Serial.println(mqttConfig.port);
+  // Serial.print("  User: ");
+  // Serial.println(mqttConfig.user);
+  // Serial.print("  Pass: ");
+  // Serial.println(mqttConfig.pass);
 
   String configUrl = "http://" + WiFi.localIP().toString();
   ha = new HomeAssistant(netClient, mqttConfig.server, mqttConfig.port, mqttConfig.user, mqttConfig.pass, DEVICE_NAME, sensor_serial, configUrl);
   ha->begin();  
 }
-
 
 void loop() {
   static char errorMessage[64];
