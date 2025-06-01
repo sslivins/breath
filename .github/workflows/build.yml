@@ -34,7 +34,7 @@ jobs:
 
       - name: Compile Sketch
         run: |
-          arduino-cli compile --fqbn esp32:esp32:adafruit_feather_esp32c6:CDCOnBoot=enabled --warnings none --build-path ./build
+          arduino-cli compile --fqbn esp32:esp32:adafruit_feather_esp32c6:CDCOnBoot=cdc --warnings none --build-path ./build
 
       - name: List build output
         run: ls -R build         
