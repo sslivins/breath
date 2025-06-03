@@ -139,7 +139,8 @@ void HomeAssistant::SendDiscovery() {
     String(""),
     String("battery"),
     String("%"),
-    String("{{ value_json.battery }}")  
+    String("{{ value_json.battery }}")
+  );
 
   publishDiscovery(
     String("switch"),
