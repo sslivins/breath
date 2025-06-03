@@ -49,6 +49,7 @@ void setup() {
 
     // Blink LED slowly for 10 seconds, checking button state
     while (millis() - startTime < 10000) {
+
       digitalWrite(RED_LED, HIGH);
       delay(200);
       digitalWrite(RED_LED, LOW);
@@ -86,26 +87,6 @@ void setup() {
     digitalWrite(RED_LED, LOW);    // turn the RED_LED off by making the voltage LOW
     delay(300);
   }
-
-  // // Set timezone environment string for Pacific Time (automatically handles DST)
-  // setenv("TZ", "PST8PDT,M3.2.0/2,M11.1.0/2", 1);
-  // tzset();  
-
-  // // Set up SNTP (Simple Network Time Protocol)
-  // configTime(0, 0, "pool.ntp.org");  // UTC offset, DST offset, NTP server
-
-  // // Wait for time to be set (optional, can retry a few times)
-  // struct tm timeinfo;
-  // while (!getLocalTime(&timeinfo)) {
-  //   digitalWrite(RED_LED, HIGH);   // turn the RED_LED on (HIGH is the voltage level)
-  //   delay(50);                // wait for a half second
-  //   digitalWrite(RED_LED, LOW);    // turn the RED_LED off by making the voltage LOW
-  //   delay(100);
-  // }  
-
-  // Serial.println("WiFi connected!");
-  // Serial.print("IP Address: ");
-  // Serial.println(WiFi.localIP());  
 
   OTAUpdater ota(IMAGE_MANIFEST_URL);
   ota.checkAndUpdate();
@@ -147,21 +128,7 @@ void setup() {
   sprintf(buf, "%012llX", serialNumber);
   String sensor_serial = String(buf);
 
-  // Serial.print("Serial Number: ");
-  // Serial.println(sensor_serial);
-
   mqttConfig = wifiSetup.getMqttConfig();
-
-  // Log mqttConfig structure
-  // Serial.println("MQTT Config:");
-  // Serial.print("  Server: ");
-  // Serial.println(mqttConfig.server);
-  // Serial.print("  Port: ");
-  // Serial.println(mqttConfig.port);
-  // Serial.print("  User: ");
-  // Serial.println(mqttConfig.user);
-  // Serial.print("  Pass: ");
-  // Serial.println(mqttConfig.pass);
 
   String configUrl = "http://" + WiFi.localIP().toString();
   ha = new HomeAssistant(netClient, mqttConfig.server, mqttConfig.port, mqttConfig.user, mqttConfig.pass, DEVICE_NAME, sensor_serial, configUrl);
@@ -208,10 +175,11 @@ void loop() {
 
       ha->publishState(co2Concentration, temperature, relativeHumidity);
 
-      //pinMode(DONE_PIN, INPUT);  // Goes high via pull-up to 5.4V
-      digitalWrite(DONE_PIN, HIGH); // Set pin high to indicate done
-      
+      ha->loop();
+
+      digitalWrite(DONE_PIN, HIGH); // Set pin high tell TPS5110 to go to sleep
   }
-    
+
+
   ha->loop();
 }
