@@ -208,12 +208,7 @@ void loop() {
 
       ha->publishState(co2Concentration, temperature, relativeHumidity);
 
-      //set DONE_PIN high to indicate sensor reading is done and trigger TPS5110 to go to sleep
-      digitalWrite(DONE_PIN, HIGH);
-      //wait for TPS5110 to go to slee
-      delay(100);
-      //set DONE_PIN low to indicate sensor reading is done and trigger TPS5110 to go to sleep
-      digitalWrite(DONE_PIN, LOW);
+      pinMode(DONE_PIN, INPUT);  // Goes high via pull-up to 5.4V
       
   }
     
