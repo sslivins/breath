@@ -133,6 +133,15 @@ void HomeAssistant::SendDiscovery() {
   );
 
   publishDiscovery(
+    String("sensor"),
+    String("battery"),
+    String(nodeId + "/state"),
+    String(""),
+    String("battery"),
+    String("%"),
+    String("{{ value_json.battery }}")  
+
+  publishDiscovery(
     String("switch"),
     String("led"),
     String(nodeId + "/led/state"),
