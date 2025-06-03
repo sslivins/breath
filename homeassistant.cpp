@@ -205,7 +205,7 @@ String getUTCTimestamp() {
   return String(ts);
 }
 
-void HomeAssistant::publishState(uint16_t co2, float temp, float hum) {
+void HomeAssistant::publishState(uint16_t co2, float temp, float hum, int battery_level) {
   if (!client.connected()) {
     Serial.println("MQTT not connected — reconnecting...");
     connectMQTT();
@@ -221,6 +221,7 @@ void HomeAssistant::publishState(uint16_t co2, float temp, float hum) {
   String payload = "{\"co2\":" + String(co2) +
                   ",\"temperature\":" + String(temp, 2) +
                   ",\"humidity\":" + String(hum, 2) +
+                  ",\"battery\":" + String(battery_level) +
                   ",\"last_updated\":null}";
 
   Serial.print("Publishing state to ");

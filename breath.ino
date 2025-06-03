@@ -173,11 +173,17 @@ void loop() {
           return;
       }
 
-      ha->publishState(co2Concentration, temperature, relativeHumidity);
+      //read battery voltage and conver to percentage
+      //hardcode to 100% for now
+      int batteryPercentage = 100;
 
-      ha->loop();
+      ha->publishState(co2Concentration, temperature, relativeHumidity, batteryPercentage);
 
-      delay(5000); // Wait for 5 seconds before next reading
+      //run loop for a second to ensure message is sent
+      for(int i = 0; i < 10; i++) {
+          ha->loop();
+          delay(100);
+      }
 
       digitalWrite(DONE_PIN, HIGH); // Set pin high tell TPS5110 to go to sleep
   }
