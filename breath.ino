@@ -208,7 +208,8 @@ void loop() {
 
       ha->publishState(co2Concentration, temperature, relativeHumidity);
 
-      pinMode(DONE_PIN, INPUT);  // Goes high via pull-up to 5.4V
+      //pinMode(DONE_PIN, INPUT);  // Goes high via pull-up to 5.4V
+      digitalWrite(DONE_PIN, HIGH); // Set pin high to indicate done
       
   }
     
