@@ -174,7 +174,6 @@ void loop() {
   uint16_t co2Concentration = 0;
   float temperature = 0.0;
   float relativeHumidity = 0.0;
-  published_sensor_reading = false;
   // Check if WiFi is still connecte
 
   if ((unsigned long)(millis() - last_sensor_reading) > 30000) 
