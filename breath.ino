@@ -37,6 +37,7 @@ void setup() {
 
   pinMode(RED_LED, OUTPUT);
   pinMode(RESET_WIFI_PIN, INPUT_PULLUP); // Button is active LOW
+  pinMode(DONE_PIN, OUTPUT);
 
   // Check if boot button is held at startup
   if (digitalRead(RESET_WIFI_PIN) == LOW) {
@@ -168,11 +169,13 @@ void setup() {
 
 void loop() {
   static char errorMessage[64];
-  static int16_t error;  
+  static int16_t error;
 
   uint16_t co2Concentration = 0;
   float temperature = 0.0;
   float relativeHumidity = 0.0;
+  published_sensor_reading = false;
+  // Check if WiFi is still connecte
 
   if ((unsigned long)(millis() - last_sensor_reading) > 30000) 
   {
@@ -203,7 +206,10 @@ void loop() {
           return;
       }
 
-      ha->publishState(co2Concentration, temperature, relativeHumidity);      
+      ha->publishState(co2Concentration, temperature, relativeHumidity);
+
+      //set DONE_PIN high to indicate sensor reading is done and trigger TPS5110 to go to sleep
+      digitalWrite(DONE_PIN, HIGH);
       
   }
     
