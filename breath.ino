@@ -38,6 +38,7 @@ void setup() {
   pinMode(RED_LED, OUTPUT);
   pinMode(RESET_WIFI_PIN, INPUT_PULLUP); // Button is active LOW
   pinMode(DONE_PIN, OUTPUT);
+  digitalWrite(DONE_PIN, LOW); //set pin to LOW initially
 
   // Check if boot button is held at startup
   if (digitalRead(RESET_WIFI_PIN) == LOW) {
@@ -209,6 +210,10 @@ void loop() {
 
       //set DONE_PIN high to indicate sensor reading is done and trigger TPS5110 to go to sleep
       digitalWrite(DONE_PIN, HIGH);
+      //wait for TPS5110 to go to slee
+      delay(100);
+      //set DONE_PIN low to indicate sensor reading is done and trigger TPS5110 to go to sleep
+      digitalWrite(DONE_PIN, LOW);
       
   }
     
