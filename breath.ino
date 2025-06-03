@@ -177,6 +177,8 @@ void loop() {
 
       ha->loop();
 
+      delay(5000); // Wait for 5 seconds before next reading
+
       digitalWrite(DONE_PIN, HIGH); // Set pin high tell TPS5110 to go to sleep
   }
 
