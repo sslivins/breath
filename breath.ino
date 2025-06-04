@@ -32,8 +32,10 @@ void setup() {
   //USB-CDC on boot must be enabled for serial port output to work
   Serial.begin(115200);
 
+#ifdef ENABLE_SERIAL_DEBUG
   Serial.print("Breath ");
   Serial.println(FW_VERSION);
+#endif
 
   pinMode(RED_LED, OUTPUT);
   pinMode(RESET_WIFI_PIN, INPUT_PULLUP); // Button is active LOW
@@ -45,7 +47,9 @@ void setup() {
     unsigned long startTime = millis();
     bool stillHolding = true;
 
+#ifdef ENABLE_SERIAL_DEBUG
     Serial.println("Boot button held, entering WiFi reset mode...");
+#endif
 
     // Blink LED slowly for 10 seconds, checking button state
     while (millis() - startTime < 10000) {
@@ -62,7 +66,9 @@ void setup() {
     }
 
     if (stillHolding) {
+#ifdef ENABLE_SERIAL_DEBUG
       Serial.println("Button still held, resetting WiFi credentials...");
+#endif
       // Blink LED rapidly for 2 seconds before reset
       for (int i = 0; i < 10; i++) {
         digitalWrite(RED_LED, HIGH);
@@ -100,28 +106,36 @@ void setup() {
   // Ensure sensor is in clean state
   error = sensor.wakeUp();
   if (error != NO_ERROR) {
+#ifdef ENABLE_SERIAL_DEBUG
       Serial.print("Error trying to execute wakeUp(): ");
       errorToString(error, errorMessage, sizeof errorMessage);
       Serial.println(errorMessage);
+#endif
   }
   error = sensor.stopPeriodicMeasurement();
   if (error != NO_ERROR) {
+#ifdef ENABLE_SERIAL_DEBUG
       Serial.print("Error trying to execute stopPeriodicMeasurement(): ");
       errorToString(error, errorMessage, sizeof errorMessage);
       Serial.println(errorMessage);
+#endif
   }
   error = sensor.reinit();
   if (error != NO_ERROR) {
+#ifdef ENABLE_SERIAL_DEBUG
       Serial.print("Error trying to execute reinit(): ");
       errorToString(error, errorMessage, sizeof errorMessage);
       Serial.println(errorMessage);
+#endif
   }
   // Read out information about the sensor
   error = sensor.getSerialNumber(serialNumber);
   if (error != NO_ERROR) {
+#ifdef ENABLE_SERIAL_DEBUG
       Serial.print("Error trying to execute getSerialNumber(): ");
       errorToString(error, errorMessage, sizeof errorMessage);
       Serial.println(errorMessage);
+#endif
       return;
   }
   char buf[21];
@@ -150,26 +164,32 @@ void loop() {
 
       error = sensor.wakeUp();
       if (error != NO_ERROR) {
+#ifdef ENABLE_SERIAL_DEBUG
           Serial.print("Error trying to execute wakeUp(): ");
           errorToString(error, errorMessage, sizeof errorMessage);
           Serial.println(errorMessage);
+#endif
           return;
       }
 
       error = sensor.measureSingleShot();
       if (error != NO_ERROR) {
+#ifdef ENABLE_SERIAL_DEBUG
           Serial.print("Error trying to execute measureSingleShot(): ");
           errorToString(error, errorMessage, sizeof errorMessage);
           Serial.println(errorMessage);
+#endif
           return;
       }
 
       error = sensor.measureAndReadSingleShot(co2Concentration, temperature,
                                               relativeHumidity);
       if (error != NO_ERROR) {
+#ifdef ENABLE_SERIAL_DEBUG
           Serial.print("Error trying to execute measureAndReadSingleShot(): ");
           errorToString(error, errorMessage, sizeof errorMessage);
           Serial.println(errorMessage);
+#endif
           return;
       }
 

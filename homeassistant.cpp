@@ -1,4 +1,3 @@
-
 #include "config.h"
 
 #include <ArduinoJson.h>
@@ -38,10 +37,12 @@ void HomeAssistant::connectMQTT() {
       message += (char)payload[i];
     }
 
+#ifdef ENABLE_SERIAL_DEBUG
     Serial.print("MQTT command received on ");
     Serial.print(topic);
     Serial.print(": ");
     Serial.println(message);
+#endif
 
     String ledCommandTopic = nodeId + "/led/set";
 
@@ -58,9 +59,13 @@ void HomeAssistant::connectMQTT() {
 
   int retries = 5;
   while (!client.connected() && retries-- > 0) {
+#ifdef ENABLE_SERIAL_DEBUG
     Serial.println("Connecting to MQTT...");
+#endif
     if (client.connect(nodeId.c_str(), mqttUser.c_str(), mqttPass.c_str())) {
+#ifdef ENABLE_SERIAL_DEBUG
       Serial.println("MQTT connected.");
+#endif
 
       String controlTopic;
       controlTopic = nodeId + "/led/set";
@@ -68,28 +73,36 @@ void HomeAssistant::connectMQTT() {
 
       return;
     } else {
+#ifdef ENABLE_SERIAL_DEBUG
       Serial.print("MQTT connect failed. rc=");
       Serial.println(client.state());
+#endif
       delay(1000);
     }
   }
-
+#ifdef ENABLE_SERIAL_DEBUG
   if (!client.connected()) {
     Serial.println("Failed to connect to MQTT after retries.");
   }
+#endif
 }
 
 void HomeAssistant::SendDiscovery() {
   if (!client.connected()) {
+#ifdef ENABLE_SERIAL_DEBUG
     Serial.println("MQTT not connected — reconnecting...");
+#endif
     connectMQTT();
 
     if (!client.connected()) {
+#ifdef ENABLE_SERIAL_DEBUG
       Serial.println("MQTT failed to reconnect");
+#endif
       return;
     }
-
+#ifdef ENABLE_SERIAL_DEBUG
     Serial.println("MQTT successfully reconnected");
+#endif
   }
 
   publishDiscovery(
@@ -196,15 +209,19 @@ void HomeAssistant::publishDiscovery(const String& entityType,  // e.g. "sensor"
 
   payload += "}";
 
+#ifdef ENABLE_SERIAL_DEBUG
   Serial.println("Publishing discovery:");
   Serial.print("  Topic: ");
   Serial.println(topic);
   Serial.print("  Payload: ");
   Serial.println(payload);
+#endif
 
   bool result = client.publish(topic.c_str(), payload.c_str(), true);
+#ifdef ENABLE_SERIAL_DEBUG
   Serial.print("  MQTT publish result: ");
   Serial.println(result ? "success" : "failed");
+#endif
 }
 
 String getUTCTimestamp() {
@@ -217,15 +234,20 @@ String getUTCTimestamp() {
 
 void HomeAssistant::publishState(uint16_t co2, float temp, float hum, int battery_level) {
   if (!client.connected()) {
+#ifdef ENABLE_SERIAL_DEBUG
     Serial.println("MQTT not connected — reconnecting...");
+#endif
     connectMQTT();
 
     if (!client.connected()) {
+#ifdef ENABLE_SERIAL_DEBUG
       Serial.println("MQTT failed to reconnect");
+#endif
       return;
     }
-
+#ifdef ENABLE_SERIAL_DEBUG
     Serial.println("MQTT successfully reconnected");
+#endif
   }
 
   String payload = "{\"co2\":" + String(co2) +
@@ -234,13 +256,17 @@ void HomeAssistant::publishState(uint16_t co2, float temp, float hum, int batter
                   ",\"battery\":" + String(battery_level) +
                   ",\"last_updated\":null}";
 
+#ifdef ENABLE_SERIAL_DEBUG
   Serial.print("Publishing state to ");
   Serial.print(stateTopic);
   Serial.print(": ");
   Serial.println(payload);
+#endif
 
   bool result = client.publish(stateTopic.c_str(), payload.c_str(), true);
 
+#ifdef ENABLE_SERIAL_DEBUG
   Serial.print("  MQTT publish result: ");
   Serial.println(result ? "success" : "failed");
+#endif
 }
