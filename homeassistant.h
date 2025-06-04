@@ -15,6 +15,7 @@ public:
   void begin();
   void loop();
   void publishState(uint16_t co2, float temp, float hum, int battery_level);
+  void disconnect();     
 
 private:
   PubSubClient client;
@@ -37,7 +38,6 @@ private:
                         const String& deviceClass,
                         const String& unit,
                         const String& valueTemplate);
-  void disconnect();                        
 };
 
 #endif
