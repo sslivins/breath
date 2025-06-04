@@ -199,13 +199,15 @@ void loop() {
 
       ha->publishState(co2Concentration, temperature, relativeHumidity, batteryPercentage);
 
+      //run loop for a second to ensure message is sent
+      for(int i = 0; i < 3; i++) {
+          ha->loop();
+          delay(100);
+      }      
+
       ha->disconnect();
 
-      // //run loop for a second to ensure message is sent
-      // for(int i = 0; i < 10; i++) {
-      //     ha->loop();
-      //     delay(100);
-      // }
+
 
       digitalWrite(DONE_PIN, HIGH); // Set pin high tell TPS5110 to go to sleep
   }

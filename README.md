@@ -48,8 +48,18 @@ This project is an air quality monitor for the Adafruit Feather ESP32-C6 board. 
 
 ### 4. **Resetting WiFi Credentials**
 
-- Hold the **WiFi reset button** (GPIO 4) while pressing reset or powering up.
-- The onboard LED will blink rapidly, credentials will be erased, and the device will restart into AP mode.
+To reset the WiFi credentials:
+
+1. **Tie GPIO 4 (WiFi reset button) to ground.**
+2. **Apply power to the board or press the reset button.**
+3. The onboard red LED will **blink slowly for 10 seconds**.  
+  - If GPIO 4 remains tied to ground for the full 10 seconds, the LED will then **blink rapidly for 1 second**.
+  - This indicates that WiFi credentials have been erased.
+4. The device will restart in Access Point (AP) mode with the SSID `Breath-Setup`.
+5. Connect to the `Breath-Setup` WiFi network.  
+  - Open a browser and navigate to [http://192.168.4.1](http://192.168.4.1) to access the WiFi setup page.
+
+This process allows you to easily reset and reconfigure WiFi and MQTT settings.
 
 ---
 
