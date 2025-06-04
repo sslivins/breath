@@ -65,6 +65,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Fail if tag already exists
+        run: |
+          TAG="v${{ needs.build.outputs.version }}"
+          if gh release view "$TAG" --repo "${{ github.repository }}"; then
+            echo "Release tag $TAG already exists. Failing the job."
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
