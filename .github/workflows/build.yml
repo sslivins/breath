@@ -38,7 +38,7 @@ jobs:
           --fqbn esp32:esp32:adafruit_feather_esp32c6:CDCOnBoot=cdc \
           --warnings none \
           --build-path ./build \
-          --build-property compiler.ldflags="--gc-sections"
+          --build-property compiler.ldflags="--gc-sections" \
           --verbose
         # --build-property build.extra_flags="-Wl,-S -Wl,--gc-sections"
 
