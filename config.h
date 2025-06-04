@@ -4,7 +4,7 @@
 // Device Info
 #define DEVICE_NAME   "Breath"
 
-//#define ENABLE_SERIAL_DEBUG  // Enable serial debug output
+#define ENABLE_SERIAL_DEBUG  // Enable serial debug output
 
 #define RED_LED LED_BUILTIN
 #define BOOT_BUTTON_PIN 9
