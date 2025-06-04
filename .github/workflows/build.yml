@@ -34,7 +34,13 @@ jobs:
 
       - name: Compile Sketch
         run: |
-          arduino-cli compile --fqbn esp32:esp32:adafruit_feather_esp32c6:CDCOnBoot=cdc --warnings none --build-path ./build
+          arduino-cli compile \
+          --fqbn esp32:esp32:adafruit_feather_esp32c6:CDCOnBoot=cdc \
+          --warnings none \
+          --build-path ./build \
+          --build-property build.flags.optimize=-Os \
+          --build-property build.extra_flags="-Wl,-S -Wl,--gc-sections"
+
 
       - name: Read version from config.h
         id: get_version
