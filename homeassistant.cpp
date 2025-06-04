@@ -270,3 +270,13 @@ void HomeAssistant::publishState(uint16_t co2, float temp, float hum, int batter
   Serial.println(result ? "success" : "failed");
 #endif
 }
+
+void HomeAssistant::disconnect() {
+#ifdef ENABLE_SERIAL_DEBUG
+    Serial.println("Disconnecting from MQTT broker...");
+#endif
+    client.disconnect();
+#ifdef ENABLE_SERIAL_DEBUG
+    Serial.println("MQTT disconnected.");
+#endif
+}
