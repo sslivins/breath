@@ -37,6 +37,7 @@ private:
                         const String& deviceClass,
                         const String& unit,
                         const String& valueTemplate);
+  void disconnect();                        
 };
 
 #endif
