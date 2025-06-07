@@ -36,7 +36,17 @@ void OTAUpdater::checkAndUpdate() {
 }
 
 bool OTAUpdater::isNewerVersion(const String& remote, const String& local) {
-    return remote != local; // Replace with semantic version compare if needed
+    // Compare semantic versions: major.minor.patch
+    int rMajor, rMinor, rPatch;
+    int lMajor, lMinor, lPatch;
+    if (sscanf(remote.c_str(), "%d.%d.%d", &rMajor, &rMinor, &rPatch) != 3 ||
+        sscanf(local.c_str(), "%d.%d.%d", &lMajor, &lMinor, &lPatch) != 3) {
+        // If parsing fails, fallback to string comparison
+        return remote != local;
+    }
+    if (rMajor != lMajor) return rMajor > lMajor;
+    if (rMinor != lMinor) return rMinor > lMinor;
+    return rPatch > lPatch;
 }
 
 void OTAUpdater::performOTA(const String& binUrl) {
