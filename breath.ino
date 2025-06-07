@@ -29,10 +29,8 @@ void setup() {
   static char errorMessage[64];
   static int16_t error;  
 
-#ifdef USE_NATIVE_SERIAL_PINS
-  Serial.begin(SERIAL_BAUD_RATE, SERIAL_8N1, SERIAL_RX_PIN, SERIAL_TX_PIN);
-#else
-  Serial.begin(115200);
+#ifdef ENABLE_SERIAL_DEBUG
+  Serial.begin(SERIAL_BAUD_RATE);
 #endif
 
 #ifdef ENABLE_SERIAL_DEBUG
