@@ -29,8 +29,11 @@ void setup() {
   static char errorMessage[64];
   static int16_t error;  
 
-  //USB-CDC on boot must be enabled for serial port output to work
+#ifdef USE_NATIVE_SERIAL_PINS
+  Serial.begin(SERIAL_BAUD_RATE, SERIAL_8N1, SERIAL_RX_PIN, SERIAL_TX_PIN);
+#else
   Serial.begin(115200);
+#endif
 
 #ifdef ENABLE_SERIAL_DEBUG
   Serial.print("Breath ");

@@ -5,16 +5,16 @@
 #define DEVICE_NAME   "Breath"
 
 #define ENABLE_SERIAL_DEBUG  // Enable serial debug output
+#define SERIAL_BAUD_RATE 115200
+#define USE_NATIVE_SERIAL_PINS //otherwise use usb-cdc (must build with CDCOnBoot=cdc or serial prints wont work)
+#define SERIAL_RX_PIN 30
+#define SERIAL_TX_PIN 31
 
 #define RED_LED LED_BUILTIN
-#define BOOT_BUTTON_PIN 9
-#define NEOPIXEL_PIN 9   // Feather ESP32-C6 NeoPixel is on GPIO 9
-#define NUMPIXELS    1   // There's only one NeoPixel on the board
-
 #define RESET_WIFI_PIN 4 // Pin to reset WiFi credentials (if needed)
 #define DONE_PIN 7
 
-#define FW_VERSION "0.1.18"
+#define FW_VERSION "0.1.19"
 #define IMAGE_MANIFEST_URL "https://github.com/sslivins/breath/releases/latest/download/manifest.json"
 
 #endif
