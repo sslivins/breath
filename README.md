@@ -19,9 +19,10 @@ This project is an air quality monitor for the Adafruit Feather ESP32-C6 board. 
 
 ## Hardware
 
-- **Board:** Adafruit Feather ESP32-C6
-- **Sensor:** Sensirion SCD4x (CO₂, temperature, humidity)
-- **Onboard NeoPixel:** Used for status indication (optional)
+- **Board:** [Adafruit Feather ESP32-C6](https://www.adafruit.com/product/5933)
+- **Sensor:** [Sensirion SCD4x (CO₂, temperature, humidity)](https://www.adafruit.com/product/5187)
+- **3.3v Buck Converter** [TPS62827 3.3V Buck Converter](https://www.adafruit.com/product/4920)
+- **Power Timer** [Adafruit TPL5111 Low Power Timer Breakout](https://www.adafruit.com/product/3573)
 - **GPIO 4:** tie to ground and then power board and wait 10 seconds until led flashes to reset WiFi credentials
 
 ---
@@ -77,9 +78,6 @@ Edit `config.h` for device-specific settings:
 // Hardware Pins
 #define RED_LED         LED_BUILTIN
 #define BOOT_BUTTON_PIN 9          // Boot/reset button GPIO
-#define NEOPIXEL_PIN    9          // Feather ESP32-C6 NeoPixel is on GPIO 9
-#define NUMPIXELS       1          // Only one NeoPixel on the board
-
 #define RESET_WIFI_PIN  4          // Pin to reset WiFi credentials
 #define DONE_PIN        7          // Pin to signal done/sleep
 ```
@@ -88,7 +86,6 @@ Edit `config.h` for device-specific settings:
 - **ENABLE_SERIAL_DEBUG:** Uncomment to enable serial debug output.
 - **RED_LED:** GPIO for the onboard red LED.
 - **BOOT_BUTTON_PIN:** GPIO for the boot/reset button.
-- **NEOPIXEL_PIN / NUMPIXELS:** NeoPixel configuration.
 - **RESET_WIFI_PIN:** GPIO for the WiFi reset button.
 - **DONE_PIN:** GPIO used to signal completion or sleep (e.g., to a power controller).
 

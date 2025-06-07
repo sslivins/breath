@@ -30,11 +30,26 @@ jobs:
 
       - name: Install Libraries
         run: |
-          arduino-cli lib install "WiFiManager" "Sensirion I2C SCD4x" "PubSubClient" "ArduinoJson"  
+          arduino-cli lib install "WiFiManager" "Sensirion I2C SCD4x" "PubSubClient" "ArduinoJson"
+
+      - name: Set CDC_ON_BOOT_MODE from config.h
+        id: set_cdc_mode
+        run: |
+          if grep -qE '^[[:space:]]*#define[[:space:]]+USE_NATIVE_SERIAL_PINS' config.h; then
+            echo "CDC_ON_BOOT_MODE=default" >> $GITHUB_ENV
+            echo "CDC_ON_BOOT_MODE=default"
+          else
+            echo "CDC_ON_BOOT_MODE=cdc" >> $GITHUB_ENV
+            echo "CDC_ON_BOOT_MODE=cdc"
+          fi
 
       - name: Compile Sketch
         run: |
-          arduino-cli compile --fqbn esp32:esp32:adafruit_feather_esp32c6:CDCOnBoot=cdc --warnings none --build-path ./build
+          arduino-cli compile \
+          --fqbn esp32:esp32:adafruit_feather_esp32c6:CDCOnBoot=${{ env.CDC_ON_BOOT_MODE }} \
+          --warnings none \
+          --build-path ./build \
+          --verbose
 
       - name: Read version from config.h
         id: get_version
